@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import create_engine
-import pymysql
+import psycopg2
 
 
 class Database:
@@ -9,23 +9,22 @@ class Database:
 
     def connect(self):
         # DB 연결 설정
-        DB_HOST = "222.98.89.23"
-        DB_PORT = 3307
-        DB_USER = "nalt"
-        DB_PASS = "Ahrud2323wewe!"
-        DB_NAME = "binance_futures"
+        DB_HOST = "localhost"
+        DB_PORT = 5432
+        DB_USER = "mingyu"
+        DB_PASS = "alsrb2091"
+        DB_NAME = "loud_sourcing"
 
-        # SQLAlchemy 엔진 생성 (MariaDB용)
-        self.engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
-
-        # pymysql 연결
-        self.conn = pymysql.connect(
+        # SQLAlchemy 엔진 생성
+        self.engine = create_engine(f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
+        
+        # psycopg2 연결
+        self.conn = psycopg2.connect(
             host=DB_HOST, 
             port=DB_PORT, 
             user=DB_USER, 
             password=DB_PASS, 
-            db=DB_NAME,
-            charset='utf8mb4'
+            dbname=DB_NAME
         )
         self.cursor = self.conn.cursor()
 
@@ -68,7 +67,7 @@ class Database:
         self.conn.commit()
 
     def insert_by_series(self, tname, data):
-        columns = ', '.join(['`' + x + '`' for x in data.index])
+        columns = ', '.join(data.index)
         values = ", ".join(["%s"] * data.shape[0])
 
         # 데이터 삽입
